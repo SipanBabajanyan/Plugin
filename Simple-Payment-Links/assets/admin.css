@@ -1,0 +1,54 @@
+/**
+ * Стили для админки Simple Payment Links
+ */
+
+.spl-create-form {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.spl-links-list {
+    margin-top: 30px;
+}
+
+.status-active {
+    color: #46b450;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: #dc3232;
+    font-weight: bold;
+}
+
+.wp-list-table input[readonly] {
+    background: #f1f1f1;
+    cursor: pointer;
+}
+
+.wp-list-table input[readonly]:hover {
+    background: #e8e8e8;
+}
+
+.spl-admin-notice {
+    margin: 5px 0 15px 0;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .spl-create-form {
+        padding: 15px;
+    }
+    
+    .wp-list-table {
+        font-size: 14px;
+    }
+    
+    .wp-list-table th,
+    .wp-list-table td {
+        padding: 8px;
+    }
+}

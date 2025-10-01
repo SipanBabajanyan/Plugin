@@ -1,75 +1,65 @@
 /**
- * Стили для фронтенда
+ * Стили для Simple Payment Links
  */
 
-.subscription-payment-container {
+.spl-payment-container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.subscription-payment-header {
+.spl-payment-header {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 2px solid #f0f0f0;
 }
 
-.subscription-payment-header h1 {
+.spl-payment-header h1 {
     color: #333;
     margin: 0 0 10px 0;
     font-size: 28px;
     font-weight: 600;
 }
 
-.subscription-description {
+.spl-description {
     color: #666;
     font-size: 16px;
     margin: 0;
 }
 
-.subscription-payment-content {
+.spl-payment-content {
     display: grid;
     gap: 30px;
 }
 
-.subscription-details {
+.spl-payment-details {
     background: #f8f9fa;
     padding: 20px;
     border-radius: 8px;
     text-align: center;
 }
 
-.subscription-amount {
+.spl-amount {
     font-size: 32px;
     font-weight: 700;
     color: #2c3e50;
     margin-bottom: 15px;
 }
 
-.subscription-amount .amount {
-    display: block;
-}
-
-.subscription-amount .currency {
-    font-size: 18px;
-    color: #7f8c8d;
-    font-weight: 400;
-}
-
-.customer-info {
+.spl-customer-info {
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid #e9ecef;
 }
 
-.customer-info p {
+.spl-customer-info p {
     margin: 0;
     color: #555;
 }
 
-.payment-form {
+.spl-payment-form {
     background: #fff;
     border: 1px solid #e9ecef;
     border-radius: 8px;
@@ -77,29 +67,29 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.payment-methods h3 {
+.spl-payment-methods h3 {
     margin: 0 0 20px 0;
     color: #333;
     font-size: 18px;
 }
 
-.payment-gateways {
+.spl-gateways {
     display: grid;
     gap: 15px;
     margin-bottom: 25px;
 }
 
-.payment-gateway {
+.spl-gateway {
     position: relative;
 }
 
-.payment-gateway input[type="radio"] {
+.spl-gateway input[type="radio"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
 }
 
-.payment-gateway label {
+.spl-gateway label {
     display: block;
     padding: 15px 20px;
     border: 2px solid #e9ecef;
@@ -109,12 +99,12 @@
     background: #fff;
 }
 
-.payment-gateway label:hover {
+.spl-gateway label:hover {
     border-color: #007cba;
     background: #f8f9fa;
 }
 
-.payment-gateway input[type="radio"]:checked + label {
+.spl-gateway input[type="radio"]:checked + label {
     border-color: #007cba;
     background: #e3f2fd;
     box-shadow: 0 0 0 1px #007cba;
@@ -133,11 +123,11 @@
     color: #666;
 }
 
-.payment-actions {
+.spl-payment-actions {
     text-align: center;
 }
 
-.payment-button {
+.spl-payment-button {
     background: #007cba;
     color: #fff;
     border: none;
@@ -151,13 +141,13 @@
     position: relative;
 }
 
-.payment-button:hover {
+.spl-payment-button:hover {
     background: #005a87;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,124,186,0.3);
 }
 
-.payment-button:disabled {
+.spl-payment-button:disabled {
     background: #ccc;
     cursor: not-allowed;
     transform: none;
@@ -185,46 +175,46 @@
     100% { transform: rotate(360deg); }
 }
 
-.subscription-info {
+.spl-payment-info {
     display: grid;
     gap: 20px;
 }
 
-.info-box {
+.spl-info-box {
     background: #f8f9fa;
     padding: 20px;
     border-radius: 8px;
     border-left: 4px solid #007cba;
 }
 
-.info-box h4 {
+.spl-info-box h4 {
     margin: 0 0 15px 0;
     color: #333;
     font-size: 16px;
 }
 
-.info-box ul {
+.spl-info-box ul {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.info-box li {
+.spl-info-box li {
     padding: 5px 0;
     border-bottom: 1px solid #e9ecef;
 }
 
-.info-box li:last-child {
+.spl-info-box li:last-child {
     border-bottom: none;
 }
 
-.info-box strong {
+.spl-info-box strong {
     color: #555;
     display: inline-block;
     width: 80px;
 }
 
-.security-info {
+.spl-security-info {
     text-align: center;
     padding: 15px;
     background: #e8f5e8;
@@ -232,12 +222,12 @@
     color: #2d5a2d;
 }
 
-.security-info .dashicons {
+.spl-security-info .dashicons {
     vertical-align: middle;
     margin-right: 5px;
 }
 
-.subscription-error {
+.spl-error {
     background: #f8d7da;
     color: #721c24;
     padding: 15px;
@@ -247,27 +237,7 @@
     margin: 20px 0;
 }
 
-.subscription-notification {
-    padding: 15px;
-    margin: 15px 0;
-    border-radius: 6px;
-    text-align: center;
-    font-weight: 500;
-}
-
-.subscription-notification.success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.subscription-notification.error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.no-payment-methods {
+.spl-no-methods {
     text-align: center;
     color: #666;
     font-style: italic;
@@ -276,93 +246,26 @@
     border-radius: 6px;
 }
 
-/* Стили для простых платежей */
-.simple-payment-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.simple-payment-header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.simple-payment-header h1 {
-    color: #333;
-    margin: 0 0 10px 0;
-    font-size: 28px;
-    font-weight: 600;
-}
-
-.payment-description {
-    color: #666;
-    font-size: 16px;
-    margin: 0;
-}
-
-.simple-payment-content {
-    display: grid;
-    gap: 30px;
-}
-
-.payment-details {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.payment-amount {
-    font-size: 32px;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 15px;
-}
-
-.payment-amount .amount {
-    display: block;
-}
-
-.payment-amount .currency {
-    font-size: 18px;
-    color: #7f8c8d;
-    font-weight: 400;
-}
-
-.simple-payment-error {
-    background: #f8d7da;
-    color: #721c24;
-    padding: 15px;
-    border-radius: 6px;
-    border: 1px solid #f5c6cb;
-    text-align: center;
-    margin: 20px 0;
-}
-
 /* Адаптивность */
 @media (max-width: 768px) {
-    .simple-payment-container {
+    .spl-payment-container {
         padding: 15px;
     }
     
-    .simple-payment-header h1 {
+    .spl-payment-header h1 {
         font-size: 24px;
     }
     
-    .payment-amount {
+    .spl-amount {
         font-size: 28px;
     }
     
-    .payment-button {
+    .spl-payment-button {
         width: 100%;
         padding: 18px 20px;
     }
     
-    .payment-gateway label {
+    .spl-gateway label {
         padding: 12px 15px;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Шаблон простой оплаты без товара
+ * Шаблон страницы оплаты
  */
 
 if (!defined('ABSPATH')) {
@@ -11,40 +11,38 @@ if (!defined('ABSPATH')) {
 $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 ?>
 
-<div class="simple-payment-container">
-    <div class="simple-payment-header">
+<div class="spl-payment-container">
+    <div class="spl-payment-header">
         <h1>Оплата по ссылке</h1>
-        <p class="payment-description"><?php echo esc_html($payment_data->description ?: 'Платеж по ссылке'); ?></p>
+        <p class="spl-description"><?php echo esc_html($link_data->description ?: 'Платеж по ссылке'); ?></p>
     </div>
 
-    <div class="simple-payment-content">
-        <div class="payment-details">
-            <div class="payment-amount">
-                <span class="amount"><?php echo wc_price($payment_data->amount); ?></span>
-                <span class="currency"><?php echo esc_html($payment_data->currency); ?></span>
+    <div class="spl-payment-content">
+        <div class="spl-payment-details">
+            <div class="spl-amount">
+                <span class="amount"><?php echo wc_price($link_data->amount); ?></span>
             </div>
             
-            <?php if ($payment_data->customer_name): ?>
-                <div class="customer-info">
-                    <p><strong>Клиент:</strong> <?php echo esc_html($payment_data->customer_name); ?></p>
+            <?php if ($link_data->customer_name): ?>
+                <div class="spl-customer-info">
+                    <p><strong>Клиент:</strong> <?php echo esc_html($link_data->customer_name); ?></p>
                 </div>
             <?php endif; ?>
         </div>
 
-        <div class="payment-form">
-            <form id="simple-payment-form" method="post">
-                <?php wp_nonce_field('simple_payment_nonce', 'simple_payment_nonce'); ?>
-                <input type="hidden" name="token" value="<?php echo esc_attr($payment_data->token); ?>">
+        <div class="spl-payment-form">
+            <form id="spl-payment-form" method="post">
+                <input type="hidden" name="token" value="<?php echo esc_attr($link_data->token); ?>">
                 
-                <div class="payment-methods">
+                <div class="spl-payment-methods">
                     <h3>Выберите способ оплаты:</h3>
                     
                     <?php if (empty($available_gateways)): ?>
-                        <p class="no-payment-methods">Нет доступных методов оплаты.</p>
+                        <p class="spl-no-methods">Нет доступных методов оплаты.</p>
                     <?php else: ?>
-                        <div class="payment-gateways">
+                        <div class="spl-gateways">
                             <?php foreach ($available_gateways as $gateway): ?>
-                                <div class="payment-gateway">
+                                <div class="spl-gateway">
                                     <input type="radio" 
                                            name="payment_method" 
                                            value="<?php echo esc_attr($gateway->id); ?>" 
@@ -62,8 +60,8 @@ $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
                     <?php endif; ?>
                 </div>
 
-                <div class="payment-actions">
-                    <button type="submit" class="payment-button" id="process-payment">
+                <div class="spl-payment-actions">
+                    <button type="submit" class="spl-payment-button" id="spl-process-payment">
                         <span class="button-text">Оплатить сейчас</span>
                         <span class="button-loading" style="display: none;">
                             <span class="spinner"></span>
@@ -74,17 +72,17 @@ $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
             </form>
         </div>
 
-        <div class="payment-info">
-            <div class="info-box">
+        <div class="spl-payment-info">
+            <div class="spl-info-box">
                 <h4>Информация о платеже</h4>
                 <ul>
-                    <li><strong>Сумма:</strong> <?php echo wc_price($payment_data->amount); ?></li>
-                    <li><strong>Описание:</strong> <?php echo esc_html($payment_data->description ?: 'Платеж по ссылке'); ?></li>
-                    <li><strong>Создан:</strong> <?php echo date('d.m.Y', strtotime($payment_data->created_at)); ?></li>
+                    <li><strong>Сумма:</strong> <?php echo wc_price($link_data->amount); ?></li>
+                    <li><strong>Описание:</strong> <?php echo esc_html($link_data->description ?: 'Платеж по ссылке'); ?></li>
+                    <li><strong>Создан:</strong> <?php echo esc_html(date('d.m.Y', strtotime($link_data->created_at))); ?></li>
                 </ul>
             </div>
             
-            <div class="security-info">
+            <div class="spl-security-info">
                 <p><span class="dashicons dashicons-shield"></span> Безопасная оплата через WooCommerce</p>
             </div>
         </div>
@@ -93,11 +91,11 @@ $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
 <script>
 jQuery(document).ready(function($) {
-    $('#simple-payment-form').on('submit', function(e) {
+    $('#spl-payment-form').on('submit', function(e) {
         e.preventDefault();
         
         var $form = $(this);
-        var $button = $('#process-payment');
+        var $button = $('#spl-process-payment');
         var $buttonText = $button.find('.button-text');
         var $buttonLoading = $button.find('.button-loading');
         
@@ -111,10 +109,9 @@ jQuery(document).ready(function($) {
             url: '<?php echo admin_url('admin-ajax.php'); ?>',
             type: 'POST',
             data: {
-                action: 'process_simple_payment',
+                action: 'process_payment',
                 token: $form.find('input[name="token"]').val(),
-                payment_method: $form.find('input[name="payment_method"]:checked').val(),
-                nonce: '<?php echo wp_create_nonce('simple_payment_nonce'); ?>'
+                payment_method: $form.find('input[name="payment_method"]:checked').val()
             },
             success: function(response) {
                 if (response.success) {
