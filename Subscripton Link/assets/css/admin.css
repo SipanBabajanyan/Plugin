@@ -1,0 +1,335 @@
+/**
+ * Стили для админ-панели
+ */
+
+.subscription-links-admin {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.subscription-stats {
+    margin: 20px 0;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-box {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: #007cba;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.subscription-filters {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-form input[type="search"] {
+    flex: 1;
+    max-width: 300px;
+}
+
+.subscription-create-form {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.form-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.subscription-result-content {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 30px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.subscription-result-content h3 {
+    color: #007cba;
+    margin-bottom: 20px;
+}
+
+.subscription-link-display {
+    margin: 20px 0;
+}
+
+.subscription-link-display label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+}
+
+.subscription-link-display input {
+    width: 100%;
+    max-width: 500px;
+    margin-right: 10px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.subscription-actions {
+    margin-top: 20px;
+}
+
+.subscription-actions .button {
+    margin: 0 5px;
+}
+
+/* Таблица подписок */
+.wp-list-table .column-token {
+    width: 120px;
+}
+
+.wp-list-table .column-amount {
+    width: 100px;
+}
+
+.wp-list-table .column-created {
+    width: 120px;
+}
+
+.wp-list-table .column-actions {
+    width: 150px;
+}
+
+.wp-list-table .column-token code {
+    background: #f1f1f1;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.wp-list-table .row-actions {
+    visibility: hidden;
+}
+
+.wp-list-table tr:hover .row-actions {
+    visibility: visible;
+}
+
+.wp-list-table .row-actions span {
+    margin-right: 10px;
+}
+
+.wp-list-table .row-actions a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.wp-list-table .row-actions a:hover {
+    color: #005177;
+}
+
+/* Настройки */
+.subscription-links-settings .form-table th {
+    width: 200px;
+    padding: 20px 10px 20px 0;
+    vertical-align: top;
+}
+
+.subscription-links-settings .form-table td {
+    padding: 20px 10px;
+}
+
+.settings-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.settings-info {
+    margin-top: 40px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.settings-info h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.settings-info .form-table th {
+    width: 150px;
+    font-weight: 600;
+}
+
+.settings-help {
+    margin-top: 30px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.settings-help h3,
+.settings-help h4 {
+    color: #333;
+    margin-top: 0;
+}
+
+.settings-help ol {
+    padding-left: 20px;
+}
+
+.settings-help li {
+    margin-bottom: 10px;
+}
+
+.settings-help code {
+    background: #f1f1f1;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.settings-help pre {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    border: 1px solid #e9ecef;
+}
+
+.settings-help pre code {
+    background: none;
+    padding: 0;
+}
+
+/* Мета-бокс товара */
+#subscription_link_meta {
+    background: #fff;
+}
+
+#subscription_link_meta p {
+    margin: 10px 0;
+}
+
+#subscription_link_meta input[type="text"] {
+    width: 100%;
+    font-family: monospace;
+    font-size: 12px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 3px;
+}
+
+#subscription_link_meta .button {
+    margin-top: 10px;
+}
+
+/* Уведомления */
+.notice.subscription-notice {
+    border-left-color: #007cba;
+}
+
+.notice.subscription-notice .notice-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .stat-box {
+        padding: 15px;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+    }
+    
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-form input[type="search"] {
+        max-width: none;
+        margin-bottom: 10px;
+    }
+    
+    .subscription-link-display {
+        text-align: left;
+    }
+    
+    .subscription-link-display input {
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+    
+    .subscription-actions .button {
+        display: block;
+        margin: 5px 0;
+        text-align: center;
+    }
+    
+    .wp-list-table .column-token,
+    .wp-list-table .column-amount,
+    .wp-list-table .column-created {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .subscription-links-admin {
+        padding: 10px;
+    }
+    
+    .subscription-stats,
+    .subscription-create-form,
+    .subscription-result-content {
+        padding: 15px;
+    }
+}
