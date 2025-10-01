@@ -85,6 +85,7 @@ if (!defined('ABSPATH')) {
                         <th>Статус</th>
                         <th>Создана</th>
                         <th>Ссылка</th>
+                        <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -125,6 +126,13 @@ if (!defined('ABSPATH')) {
                                 <a href="<?php echo esc_url($payment_url); ?>" 
                                    target="_blank" 
                                    class="button button-small">Открыть</a>
+                            </td>
+                            <td>
+                                <button class="button button-small button-link-delete" 
+                                        data-link-id="<?php echo esc_attr($link->id); ?>"
+                                        onclick="return confirm('Удалить эту ссылку?')">
+                                    Удалить
+                                </button>
                             </td>
                         </tr>
                     <?php endforeach; ?>

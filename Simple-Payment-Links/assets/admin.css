@@ -33,6 +33,17 @@
     background: #e8e8e8;
 }
 
+.button-link-delete {
+    color: #a00 !important;
+    border-color: #a00 !important;
+}
+
+.button-link-delete:hover {
+    color: #fff !important;
+    background: #a00 !important;
+    border-color: #a00 !important;
+}
+
 .spl-admin-notice {
     margin: 5px 0 15px 0;
 }

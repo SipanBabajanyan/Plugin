@@ -1,0 +1,260 @@
+/**
+ * Стили для Simple Payment Links
+ */
+
+.spl-payment-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.spl-payment-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.spl-payment-header h1 {
+    color: #333;
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.spl-description {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+}
+
+.spl-payment-content {
+    display: grid;
+    gap: 30px;
+}
+
+.spl-payment-details {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.spl-amount {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.spl-payment-form {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.spl-payment-methods h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.spl-gateways {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.spl-gateway {
+    position: relative;
+}
+
+.spl-gateway input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.spl-gateway label {
+    display: block;
+    padding: 15px 20px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.spl-gateway label:hover {
+    border-color: #007cba;
+    background: #f8f9fa;
+}
+
+.spl-gateway input[type="radio"]:checked + label {
+    border-color: #007cba;
+    background: #e3f2fd;
+    box-shadow: 0 0 0 1px #007cba;
+}
+
+.gateway-title {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.gateway-description {
+    display: block;
+    font-size: 14px;
+    color: #666;
+}
+
+.spl-payment-actions {
+    text-align: center;
+}
+
+.spl-payment-button {
+    background: #007cba;
+    color: #fff;
+    border: none;
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    position: relative;
+}
+
+.spl-payment-button:hover {
+    background: #005a87;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,124,186,0.3);
+}
+
+.spl-payment-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.button-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spl-payment-info {
+    display: grid;
+    gap: 20px;
+}
+
+.spl-info-box {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #007cba;
+}
+
+.spl-info-box h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.spl-info-box ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.spl-info-box li {
+    padding: 5px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.spl-info-box li:last-child {
+    border-bottom: none;
+}
+
+.spl-info-box strong {
+    color: #555;
+    display: inline-block;
+    width: 80px;
+}
+
+.spl-security-info {
+    text-align: center;
+    padding: 15px;
+    background: #e8f5e8;
+    border-radius: 6px;
+    color: #2d5a2d;
+}
+
+.spl-security-info .dashicons {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.spl-error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #f5c6cb;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.spl-no-methods {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .spl-payment-container {
+        padding: 15px;
+    }
+    
+    .spl-payment-header h1 {
+        font-size: 24px;
+    }
+    
+    .spl-amount {
+        font-size: 28px;
+    }
+    
+    .spl-payment-button {
+        width: 100%;
+        padding: 18px 20px;
+    }
+    
+    .spl-gateway label {
+        padding: 12px 15px;
+    }
+}

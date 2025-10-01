@@ -20,6 +20,51 @@
             document.execCommand('copy');
             showNotice('Ссылка скопирована в буфер обмена!', 'success');
         });
+        
+        // Удаление ссылок
+        $('.button-link-delete').on('click', handleDeleteLink);
+    }
+    
+    /**
+     * Обработка удаления ссылки
+     */
+    function handleDeleteLink(e) {
+        e.preventDefault();
+        
+        var $button = $(this);
+        var linkId = $button.data('link-id');
+        var $row = $button.closest('tr');
+        
+        if (!confirm('Удалить эту ссылку? Это действие нельзя отменить.')) {
+            return;
+        }
+        
+        // Показываем индикатор загрузки
+        $button.prop('disabled', true).text('Удаление...');
+        
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'delete_payment_link',
+                link_id: linkId
+            },
+            success: function(response) {
+                if (response.success) {
+                    $row.fadeOut(function() {
+                        $(this).remove();
+                    });
+                    showNotice('Ссылка удалена', 'success');
+                } else {
+                    showNotice('Ошибка удаления: ' + response.data, 'error');
+                    $button.prop('disabled', false).text('Удалить');
+                }
+            },
+            error: function() {
+                showNotice('Ошибка удаления ссылки', 'error');
+                $button.prop('disabled', false).text('Удалить');
+            }
+        });
     }
 
     /**
