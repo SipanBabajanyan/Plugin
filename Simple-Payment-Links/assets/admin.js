@@ -58,6 +58,10 @@
                         $(this).remove();
                     });
                     showNotice('Ссылка удалена', 'success');
+                    
+                    // Обновляем счетчик ссылок
+                    var currentCount = parseInt($('.spl-links-list p strong').text().match(/\d+/)[0]);
+                    $('.spl-links-list p strong').text('Отладка: Найдено ссылок: ' + (currentCount - 1));
                 } else {
                     showNotice('Ошибка удаления: ' + response.data, 'error');
                     $button.prop('disabled', false).text('Удалить');

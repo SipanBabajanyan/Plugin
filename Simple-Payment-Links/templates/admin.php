@@ -68,6 +68,15 @@ if (!defined('ABSPATH')) {
                 <input type="submit" name="create_link" class="button button-primary" value="Создать ссылку">
             </p>
         </form>
+        
+        <script>
+        // Обновляем страницу после создания ссылки
+        if (window.location.search.indexOf('created=1') > -1) {
+            setTimeout(function() {
+                window.location.href = window.location.pathname + '?page=simple-payment-links';
+            }, 2000);
+        }
+        </script>
     </div>
     
     <!-- Список существующих ссылок -->
@@ -78,6 +87,9 @@ if (!defined('ABSPATH')) {
         // Отладочная информация
         if (current_user_can('manage_options')) {
             echo '<p><strong>Отладка:</strong> Найдено ссылок: ' . count($links) . '</p>';
+            if (!empty($links)) {
+                echo '<p><strong>Первая ссылка:</strong> ID=' . $links[0]->id . ', Сумма=' . $links[0]->amount . ', Название=' . $links[0]->description . '</p>';
+            }
         }
         ?>
         

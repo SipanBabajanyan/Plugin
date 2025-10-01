@@ -147,6 +147,13 @@ class Simple_Payment_Links {
             $this->create_payment_link();
         }
         
+        // Показываем уведомление о создании ссылки
+        if (isset($_GET['created']) && $_GET['created'] == '1') {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-success"><p>Ссылка успешно создана!</p></div>';
+            });
+        }
+        
         $links = $this->get_all_links();
         include SPL_PLUGIN_DIR . 'templates/admin.php';
     }
@@ -199,6 +206,10 @@ class Simple_Payment_Links {
             add_action('admin_notices', function() use ($payment_url) {
                 echo '<div class="notice notice-success"><p>Ссылка создана: <a href="' . esc_url($payment_url) . '" target="_blank">' . esc_url($payment_url) . '</a></p></div>';
             });
+            
+            // Перенаправляем на ту же страницу, чтобы обновить список
+            wp_redirect(add_query_arg(array('created' => '1'), admin_url('admin.php?page=simple-payment-links')));
+            exit;
         } else {
             global $wpdb;
             add_action('admin_notices', function() use ($wpdb) {
