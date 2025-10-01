@@ -108,13 +108,13 @@ jQuery(document).ready(function($) {
         
         // Отправляем AJAX запрос
         $.ajax({
-            url: subscriptionLinkAjax.ajaxUrl,
+            url: '<?php echo admin_url('admin-ajax.php'); ?>',
             type: 'POST',
             data: {
                 action: 'process_simple_payment',
                 token: $form.find('input[name="token"]').val(),
                 payment_method: $form.find('input[name="payment_method"]:checked').val(),
-                nonce: subscriptionLinkAjax.nonce
+                nonce: '<?php echo wp_create_nonce('simple_payment_nonce'); ?>'
             },
             success: function(response) {
                 if (response.success) {

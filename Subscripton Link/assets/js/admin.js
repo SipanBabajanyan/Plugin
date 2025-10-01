@@ -93,7 +93,7 @@
                 description: $('#simple_description').val(),
                 customer_name: $('#simple_customer_name').val(),
                 customer_email: $('#simple_customer_email').val(),
-                nonce: '<?php echo wp_create_nonce('simple_payment_nonce'); ?>'
+                nonce: $('#simple-payment-create-form input[name="simple_payment_nonce"]').val()
             },
             success: function(response) {
                 if (response.success) {

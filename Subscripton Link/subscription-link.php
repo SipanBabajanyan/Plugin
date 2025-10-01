@@ -105,32 +105,21 @@ class Subscription_Link_Payment {
      * Подключение скриптов для фронтенда
      */
     public function enqueue_scripts() {
-        if (is_page('subscription-payment')) {
+        if (is_page('simple-payment')) {
             wp_enqueue_style(
-                'subscription-link-style',
+                'simple-payment-style',
                 SUBSCRIPTION_LINK_PLUGIN_URL . 'assets/css/frontend.css',
                 array(),
                 SUBSCRIPTION_LINK_VERSION
             );
             
             wp_enqueue_script(
-                'subscription-link-script',
+                'simple-payment-script',
                 SUBSCRIPTION_LINK_PLUGIN_URL . 'assets/js/frontend.js',
                 array('jquery'),
                 SUBSCRIPTION_LINK_VERSION,
                 true
             );
-            
-            // Передаем AJAX данные
-            wp_localize_script('subscription-link-script', 'subscriptionLinkAjax', array(
-                'ajaxUrl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('subscription_link_nonce'),
-                'messages' => array(
-                    'processing' => __('Обработка платежа...', 'subscription-link'),
-                    'error' => __('Произошла ошибка. Попробуйте еще раз.', 'subscription-link'),
-                    'success' => __('Платеж успешно обработан!', 'subscription-link')
-                )
-            ));
         }
     }
     
@@ -138,16 +127,16 @@ class Subscription_Link_Payment {
      * Подключение скриптов для админки
      */
     public function admin_enqueue_scripts($hook) {
-        if (strpos($hook, 'subscription-link') !== false) {
+        if (strpos($hook, 'payment-links') !== false) {
             wp_enqueue_style(
-                'subscription-link-admin-style',
+                'simple-payment-admin-style',
                 SUBSCRIPTION_LINK_PLUGIN_URL . 'assets/css/admin.css',
                 array(),
                 SUBSCRIPTION_LINK_VERSION
             );
             
             wp_enqueue_script(
-                'subscription-link-admin-script',
+                'simple-payment-admin-script',
                 SUBSCRIPTION_LINK_PLUGIN_URL . 'assets/js/admin.js',
                 array('jquery'),
                 SUBSCRIPTION_LINK_VERSION,
