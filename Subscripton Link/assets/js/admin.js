@@ -1,5 +1,5 @@
 /**
- * JavaScript для админ-панели
+ * JavaScript для админ-панели - Simple Payment Links
  */
 
 (function($) {
@@ -14,14 +14,9 @@
      * Инициализация админ-интерфейса
      */
     function initAdminInterface() {
-        // Инициализация страницы подписок
-        if ($('.subscription-links-admin').length) {
-            initSubscriptionsPage();
-        }
-        
-        // Инициализация страницы создания
-        if ($('.subscription-links-create').length) {
-            initCreatePage();
+        // Инициализация страницы простых платежей
+        if ($('.simple-payments-admin').length) {
+            initSimplePaymentsPage();
         }
         
         // Инициализация страницы настроек
@@ -31,37 +26,33 @@
     }
 
     /**
-     * Инициализация страницы подписок
+     * Инициализация страницы простых платежей
      */
-    function initSubscriptionsPage() {
-        // Обработка выбора всех чекбоксов
-        $('#cb-select-all').on('change', function() {
-            var isChecked = $(this).is(':checked');
-            $('input[name="subscription_tokens[]"]').prop('checked', isChecked);
+    function initSimplePaymentsPage() {
+        // Показать форму создания
+        $('#create-simple-payment').on('click', function(e) {
+            e.preventDefault();
+            $('#create-simple-payment-form').show();
+            $('#simple-payment-result').hide();
         });
         
-        // Обработка деактивации ссылки
-        $('.deactivate-link').on('click', handleDeactivateLink);
-        
-        // Обработка массовых действий
-        $('#subscriptions-form').on('submit', handleBulkAction);
-        
-        // Обработка поиска
-        $('.search-form').on('submit', handleSearch);
-    }
-
-    /**
-     * Инициализация страницы создания
-     */
-    function initCreatePage() {
-        // Автозаполнение суммы при выборе товара
-        $('#product_id').on('change', handleProductChange);
+        // Скрыть форму создания
+        $('#cancel-create').on('click', function() {
+            $('#create-simple-payment-form').hide();
+        });
         
         // Обработка формы создания
-        $('#create-subscription-form').on('submit', handleCreateForm);
+        $('#simple-payment-create-form').on('submit', handleSimpleCreateForm);
         
         // Копирование ссылки
-        $('#copy-link').on('click', handleCopyLink);
+        $('#copy-simple-link').on('click', handleCopyLink);
+        
+        // Создать еще одну ссылку
+        $('#create-another').on('click', function() {
+            $('#simple-payment-result').hide();
+            $('#create-simple-payment-form').show();
+            $('#simple-payment-create-form')[0].reset();
+        });
     }
 
     /**
@@ -76,107 +67,9 @@
     }
 
     /**
-     * Обработка деактивации ссылки
+     * Обработка формы создания простых платежей
      */
-    function handleDeactivateLink(e) {
-        e.preventDefault();
-        
-        if (!confirm('Вы уверены, что хотите деактивировать эту ссылку подписки?')) {
-            return;
-        }
-        
-        var $button = $(this);
-        var token = $button.data('token');
-        var $row = $button.closest('tr');
-        
-        // Показываем индикатор загрузки
-        $button.prop('disabled', true).text('Деактивация...');
-        
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'deactivate_subscription_link',
-                token: token,
-                nonce: subscriptionLinkAdmin.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    $row.fadeOut(function() {
-                        $(this).remove();
-                    });
-                    showAdminNotice('Ссылка подписки деактивирована', 'success');
-                } else {
-                    showAdminNotice('Ошибка: ' + response.data, 'error');
-                    resetButton($button, 'Deactivate');
-                }
-            },
-            error: function() {
-                showAdminNotice('Произошла ошибка при деактивации ссылки', 'error');
-                resetButton($button, 'Deactivate');
-            }
-        });
-    }
-
-    /**
-     * Обработка массовых действий
-     */
-    function handleBulkAction(e) {
-        var action = $('select[name="bulk_action"]').val();
-        var action2 = $('select[name="bulk_action2"]').val();
-        var selectedAction = action || action2;
-        
-        if (!selectedAction) {
-            e.preventDefault();
-            showAdminNotice('Пожалуйста, выберите действие', 'warning');
-            return;
-        }
-        
-        var selectedItems = $('input[name="subscription_tokens[]"]:checked');
-        
-        if (selectedItems.length === 0) {
-            e.preventDefault();
-            showAdminNotice('Пожалуйста, выберите подписки для обработки', 'warning');
-            return;
-        }
-        
-        var actionText = getActionText(selectedAction);
-        
-        if (!confirm('Вы уверены, что хотите ' + actionText.toLowerCase() + ' ' + selectedItems.length + ' подписок?')) {
-            e.preventDefault();
-            return;
-        }
-    }
-
-    /**
-     * Обработка поиска
-     */
-    function handleSearch(e) {
-        var searchTerm = $('input[name="s"]').val().trim();
-        
-        if (searchTerm.length < 2) {
-            e.preventDefault();
-            showAdminNotice('Введите минимум 2 символа для поиска', 'warning');
-            return;
-        }
-    }
-
-    /**
-     * Обработка изменения товара
-     */
-    function handleProductChange() {
-        var selectedOption = $(this).find('option:selected');
-        var price = selectedOption.data('price');
-        
-        if (price) {
-            $('#subscription_amount').val(price);
-        }
-    }
-
-    /**
-     * Обработка формы создания
-     */
-    function handleCreateForm(e) {
+    function handleSimpleCreateForm(e) {
         e.preventDefault();
         
         var $form = $(this);
@@ -184,33 +77,33 @@
         var originalText = $submitButton.val();
         
         // Валидация формы
-        if (!validateCreateForm($form)) {
+        if (!validateSimpleCreateForm($form)) {
             return;
         }
         
         // Показываем индикатор загрузки
-        $submitButton.val('Создание...').prop('disabled', true);
+        $submitButton.val('Creating...').prop('disabled', true);
         
         $.ajax({
             url: ajaxurl,
             type: 'POST',
             data: {
-                action: 'create_subscription_link',
-                product_id: $('#product_id').val(),
-                subscription_amount: $('#subscription_amount').val(),
-                customer_name: $('#customer_name').val(),
-                customer_email: $('#customer_email').val(),
-                nonce: subscriptionLinkAdmin.nonce
+                action: 'create_simple_payment',
+                amount: $('#simple_amount').val(),
+                description: $('#simple_description').val(),
+                customer_name: $('#simple_customer_name').val(),
+                customer_email: $('#simple_customer_email').val(),
+                nonce: '<?php echo wp_create_nonce('simple_payment_nonce'); ?>'
             },
             success: function(response) {
                 if (response.success) {
-                    handleCreateSuccess(response.data);
+                    handleSimpleCreateSuccess(response.data);
                 } else {
-                    showAdminNotice('Ошибка: ' + response.data, 'error');
+                    showAdminNotice('Error: ' + response.data, 'error');
                 }
             },
             error: function() {
-                showAdminNotice('Произошла ошибка при создании ссылки подписки', 'error');
+                showAdminNotice('An error occurred while creating the payment link.', 'error');
             },
             complete: function() {
                 $submitButton.val(originalText).prop('disabled', false);
@@ -219,25 +112,19 @@
     }
 
     /**
-     * Валидация формы создания
+     * Валидация формы создания простых платежей
      */
-    function validateCreateForm($form) {
-        var productId = $('#product_id').val();
-        var amount = $('#subscription_amount').val();
-        var email = $('#customer_email').val();
-        
-        if (!productId) {
-            showAdminNotice('Пожалуйста, выберите товар', 'error');
-            return false;
-        }
+    function validateSimpleCreateForm($form) {
+        var amount = $('#simple_amount').val();
+        var email = $('#simple_customer_email').val();
         
         if (!amount || parseFloat(amount) <= 0) {
-            showAdminNotice('Пожалуйста, введите корректную сумму', 'error');
+            showAdminNotice('Please enter a valid amount', 'error');
             return false;
         }
         
         if (email && !isValidEmail(email)) {
-            showAdminNotice('Пожалуйста, введите корректный email', 'error');
+            showAdminNotice('Please enter a valid email', 'error');
             return false;
         }
         
@@ -247,14 +134,14 @@
     /**
      * Обработка успешного создания
      */
-    function handleCreateSuccess(data) {
+    function handleSimpleCreateSuccess(data) {
         // Показываем результат
-        $('#subscription-link-url').val(data.link);
-        $('#test-link').attr('href', data.link);
-        $('#subscription-result').show();
-        $('#create-subscription-form').hide();
+        $('#simple-payment-link-url').val(data.link);
+        $('#test-simple-link').attr('href', data.link);
+        $('#simple-payment-result').show();
+        $('#create-simple-payment-form').hide();
         
-        showAdminNotice('Ссылка подписки создана успешно!', 'success');
+        showAdminNotice('Payment link created successfully!', 'success');
     }
 
     /**
@@ -263,23 +150,22 @@
     function handleCopyLink(e) {
         e.preventDefault();
         
-        var linkInput = $('#subscription-link-url');
+        var linkInput = $('#simple-payment-link-url');
         var link = linkInput.val();
         
         if (!link) {
-            showAdminNotice('Нет ссылки для копирования', 'error');
+            showAdminNotice('No link to copy', 'error');
             return;
         }
         
         if (navigator.clipboard) {
             navigator.clipboard.writeText(link).then(function() {
-                showAdminNotice('Ссылка скопирована в буфер обмена', 'success');
+                showAdminNotice('Link copied to clipboard!', 'success');
             });
         } else {
-            // Fallback для старых браузеров
             linkInput.select();
             document.execCommand('copy');
-            showAdminNotice('Ссылка скопирована в буфер обмена', 'success');
+            showAdminNotice('Link copied to clipboard!', 'success');
         }
     }
 
@@ -292,7 +178,7 @@
         
         if (url && !isValidUrl(url)) {
             $input.addClass('error');
-            showAdminNotice('Пожалуйста, введите корректный URL', 'error');
+            showAdminNotice('Please enter a valid URL', 'error');
         } else {
             $input.removeClass('error');
         }
@@ -318,7 +204,7 @@
         });
         
         if (hasErrors) {
-            showAdminNotice('Пожалуйста, исправьте ошибки в полях URL', 'error');
+            showAdminNotice('Please fix URL field errors', 'error');
             return false;
         }
     }
@@ -328,10 +214,10 @@
      */
     function showAdminNotice(message, type) {
         // Удаляем существующие уведомления
-        $('.subscription-admin-notice').remove();
+        $('.simple-admin-notice').remove();
         
         // Создаем новое уведомление
-        var $notice = $('<div class="notice subscription-admin-notice notice-' + type + ' is-dismissible"><p>' + message + '</p></div>');
+        var $notice = $('<div class="notice simple-admin-notice notice-' + type + ' is-dismissible"><p>' + message + '</p></div>');
         
         // Добавляем уведомление в начало страницы
         $('.wrap h1').after($notice);
@@ -342,26 +228,6 @@
                 $(this).remove();
             });
         }, 5000);
-    }
-
-    /**
-     * Сброс кнопки
-     */
-    function resetButton($button, text) {
-        $button.prop('disabled', false).text(text);
-    }
-
-    /**
-     * Получить текст действия
-     */
-    function getActionText(action) {
-        var actions = {
-            'deactivate': 'Деактивировать',
-            'delete': 'Удалить',
-            'activate': 'Активировать'
-        };
-        
-        return actions[action] || action;
     }
 
     /**
@@ -385,7 +251,7 @@
     }
 
     // Экспортируем функции для глобального использования
-    window.SubscriptionAdmin = {
+    window.SimplePaymentAdmin = {
         showNotice: showAdminNotice,
         validateEmail: isValidEmail,
         validateUrl: isValidUrl

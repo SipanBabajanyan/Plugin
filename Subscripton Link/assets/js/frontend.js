@@ -1,5 +1,5 @@
 /**
- * JavaScript для фронтенда
+ * JavaScript для фронтенда - Simple Payment Links
  */
 
 (function($) {
@@ -7,15 +7,15 @@
 
     // Инициализация при загрузке страницы
     $(document).ready(function() {
-        initSubscriptionPayment();
+        initSimplePayment();
     });
 
     /**
-     * Инициализация формы оплаты подписки
+     * Инициализация простых платежей
      */
-    function initSubscriptionPayment() {
-        // Обработка отправки формы
-        $('#subscription-payment-form').on('submit', handlePaymentSubmit);
+    function initSimplePayment() {
+        // Обработка отправки формы простых платежей
+        $('#simple-payment-form').on('submit', handleSimplePaymentSubmit);
         
         // Обработка выбора метода оплаты
         $('input[name="payment_method"]').on('change', handlePaymentMethodChange);
@@ -25,9 +25,9 @@
     }
 
     /**
-     * Обработка отправки формы оплаты
+     * Обработка отправки формы простых платежей
      */
-    function handlePaymentSubmit(e) {
+    function handleSimplePaymentSubmit(e) {
         e.preventDefault();
         
         var $form = $(this);
@@ -48,7 +48,7 @@
             url: subscriptionLinkAjax.ajaxUrl,
             type: 'POST',
             data: {
-                action: 'subscription_payment',
+                action: 'process_simple_payment',
                 token: $form.find('input[name="token"]').val(),
                 payment_method: $form.find('input[name="payment_method"]:checked').val(),
                 nonce: subscriptionLinkAjax.nonce
@@ -57,12 +57,12 @@
                 if (response.success) {
                     handlePaymentSuccess(response.data);
                 } else {
-                    handlePaymentError(response.data || subscriptionLinkAjax.messages.error);
+                    handlePaymentError(response.data || 'Произошла ошибка. Попробуйте еще раз.');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('Payment error:', error);
-                handlePaymentError(subscriptionLinkAjax.messages.error);
+                handlePaymentError('Произошла ошибка. Попробуйте еще раз.');
             },
             complete: function() {
                 hideLoadingState($button, $buttonText, $buttonLoading);
@@ -88,7 +88,7 @@
      * Обработка успешного платежа
      */
     function handlePaymentSuccess(data) {
-        showNotification(subscriptionLinkAjax.messages.success, 'success');
+        showNotification('Платеж успешно обработан!', 'success');
         
         // Перенаправляем на страницу оплаты через небольшую задержку
         setTimeout(function() {

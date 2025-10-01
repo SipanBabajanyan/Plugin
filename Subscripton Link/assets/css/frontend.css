@@ -345,17 +345,14 @@
 
 /* Адаптивность */
 @media (max-width: 768px) {
-    .subscription-payment-container,
     .simple-payment-container {
         padding: 15px;
     }
     
-    .subscription-payment-header h1,
     .simple-payment-header h1 {
         font-size: 24px;
     }
     
-    .subscription-amount,
     .payment-amount {
         font-size: 28px;
     }
