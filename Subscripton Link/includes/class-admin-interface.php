@@ -53,48 +53,30 @@ class Subscription_Link_Admin_Interface {
      */
     public function add_admin_menu() {
         add_menu_page(
-            'Subscription Links',
-            'Subscription Links',
+            'Payment Links',
+            'Payment Links',
             'manage_woocommerce',
-            'subscription-links',
-            array($this, 'admin_page'),
+            'payment-links',
+            array($this, 'simple_payments_page'),
             'dashicons-admin-links',
             56
         );
         
         add_submenu_page(
-            'subscription-links',
-            'All Subscriptions',
-            'All Subscriptions',
+            'payment-links',
+            'All Payments',
+            'All Payments',
             'manage_woocommerce',
-            'subscription-links',
-            array($this, 'admin_page')
-        );
-        
-        add_submenu_page(
-            'subscription-links',
-            'Create New',
-            'Create New',
-            'manage_woocommerce',
-            'subscription-links-create',
-            array($this, 'create_page')
-        );
-        
-        add_submenu_page(
-            'subscription-links',
-            'Simple Payments',
-            'Simple Payments',
-            'manage_woocommerce',
-            'subscription-links-simple',
+            'payment-links',
             array($this, 'simple_payments_page')
         );
         
         add_submenu_page(
-            'subscription-links',
+            'payment-links',
             'Settings',
             'Settings',
             'manage_woocommerce',
-            'subscription-links-settings',
+            'payment-links-settings',
             array($this, 'settings_page')
         );
     }
@@ -130,35 +112,10 @@ class Subscription_Link_Admin_Interface {
     }
     
     /**
-     * Основная страница админки
+     * Основная страница админки (теперь простые платежи)
      */
     public function admin_page() {
-        $subscription_manager = Subscription_Link_Manager::get_instance();
-        
-        // Обработка действий
-        if (isset($_POST['action']) && $_POST['action'] === 'bulk_action') {
-            $this->handle_bulk_action();
-        }
-        
-        // Получаем подписки
-        $page = isset($_GET['paged']) ? intval($_GET['paged']) : 1;
-        $per_page = 20;
-        $offset = ($page - 1) * $per_page;
-        
-        $subscriptions = $subscription_manager->get_active_subscriptions($per_page, $offset);
-        $total_subscriptions = $this->get_total_subscriptions();
-        
-        include SUBSCRIPTION_LINK_PLUGIN_DIR . 'templates/admin-dashboard.php';
-    }
-    
-    /**
-     * Страница создания новой подписки
-     */
-    public function create_page() {
-        // Получаем товары для подписки
-        $products = $this->get_subscription_products();
-        
-        include SUBSCRIPTION_LINK_PLUGIN_DIR . 'templates/admin-create.php';
+        $this->simple_payments_page();
     }
     
     /**
@@ -175,122 +132,9 @@ class Subscription_Link_Admin_Interface {
         include SUBSCRIPTION_LINK_PLUGIN_DIR . 'templates/admin-settings.php';
     }
     
-    /**
-     * Добавить мета-боксы
-     */
-    public function add_meta_boxes() {
-        add_meta_box(
-            'subscription_link_meta',
-            'Subscription Link',
-            array($this, 'subscription_meta_box'),
-            'product',
-            'side',
-            'high'
-        );
-    }
+    // Убраны мета-боксы для товаров - больше не нужны
     
-    /**
-     * Мета-бокс подписки
-     */
-    public function subscription_meta_box($post) {
-        $is_subscription = get_post_meta($post->ID, '_is_subscription_product', true);
-        
-        if ($is_subscription === 'yes') {
-            $subscription_manager = Subscription_Link_Manager::get_instance();
-            $link = $subscription_manager->get_or_create_subscription_link($post->ID);
-            
-            if ($link) {
-                echo '<p><strong>Subscription Link:</strong></p>';
-                echo '<input type="text" value="' . esc_url($link) . '" readonly style="width: 100%;" onclick="this.select();">';
-                echo '<p><a href="' . esc_url($link) . '" target="_blank" class="button">Test Link</a></p>';
-            }
-        } else {
-            echo '<p>This product is not marked as a subscription product.</p>';
-            echo '<p>Enable "Товар для подписки" in the product data to create a subscription link.</p>';
-        }
-    }
-    
-    /**
-     * Обработка массовых действий
-     */
-    public function handle_bulk_action() {
-        if (!current_user_can('manage_woocommerce')) {
-            wp_die('Insufficient permissions');
-        }
-        
-        if (!wp_verify_nonce($_POST['_wpnonce'], 'subscription_link_bulk_action')) {
-            wp_die('Security check failed');
-        }
-        
-        $action = sanitize_text_field($_POST['bulk_action']);
-        $tokens = array_map('sanitize_text_field', $_POST['subscription_tokens']);
-        
-        $subscription_manager = Subscription_Link_Manager::get_instance();
-        $processed = 0;
-        
-        foreach ($tokens as $token) {
-            switch ($action) {
-                case 'deactivate':
-                    if ($subscription_manager->deactivate_subscription_link($token)) {
-                        $processed++;
-                    }
-                    break;
-                case 'delete':
-                    if ($subscription_manager->delete_subscription($token)) {
-                        $processed++;
-                    }
-                    break;
-            }
-        }
-        
-        $message = sprintf('Processed %d subscriptions', $processed);
-        add_action('admin_notices', function() use ($message) {
-            echo '<div class="notice notice-success"><p>' . esc_html($message) . '</p></div>';
-        });
-    }
-    
-    /**
-     * Получить товары для подписки
-     */
-    private function get_subscription_products() {
-        $args = array(
-            'post_type' => 'product',
-            'posts_per_page' => -1,
-            'meta_query' => array(
-                array(
-                    'key' => '_is_subscription_product',
-                    'value' => 'yes',
-                    'compare' => '='
-                )
-            )
-        );
-        
-        $products = get_posts($args);
-        $result = array();
-        
-        foreach ($products as $product) {
-            $wc_product = wc_get_product($product->ID);
-            $result[] = array(
-                'id' => $product->ID,
-                'title' => $product->post_title,
-                'price' => $wc_product->get_price(),
-                'currency' => get_woocommerce_currency()
-            );
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Получить общее количество подписок
-     */
-    private function get_total_subscriptions() {
-        global $wpdb;
-        
-        $table_name = $wpdb->prefix . 'subscription_links';
-        
-        return $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE is_active = 1");
-    }
+    // Упрощенный класс - убраны сложные методы с товарами
     
     /**
      * Callback для секции настроек
@@ -333,10 +177,13 @@ class Subscription_Link_Admin_Interface {
     }
     
     /**
-     * Получить статистику
+     * Получить статистику (упрощенная версия)
      */
     public function get_stats() {
-        $subscription_manager = Subscription_Link_Manager::get_instance();
-        return $subscription_manager->get_overall_stats();
+        return array(
+            'total_payments' => 0,
+            'active_payments' => 0,
+            'total_revenue' => 0
+        );
     }
 }

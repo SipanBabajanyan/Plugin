@@ -1,14 +1,14 @@
-=== Subscription Link Payment ===
+=== Simple Payment Links ===
 Contributors: yourname
-Tags: woocommerce, subscription, payment, recurring
+Tags: woocommerce, payment, simple, links
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Создает постоянные ссылки для ежемесячной оплаты подписки без заполнения форм checkout.
+Создает простые ссылки для оплаты произвольных сумм без товаров и форм checkout.
 
 == Description ==
 

@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Subscription Link Payment
+ * Plugin Name: Simple Payment Links
  * Plugin URI: https://yourwebsite.com
- * Description: Создает постоянные ссылки для ежемесячной оплаты подписки без заполнения форм checkout
- * Version: 1.0.1
+ * Description: Создает простые ссылки для оплаты произвольных сумм без товаров и форм checkout
+ * Version: 2.0.0
  * Author: Your Name
  * License: GPL v2 or later
  * Text Domain: subscription-link
@@ -35,7 +35,7 @@ add_action('before_woocommerce_init', function() {
 });
 
 // Определяем константы плагина
-define('SUBSCRIPTION_LINK_VERSION', '1.0.1');
+define('SUBSCRIPTION_LINK_VERSION', '2.0.0');
 define('SUBSCRIPTION_LINK_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SUBSCRIPTION_LINK_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SUBSCRIPTION_LINK_PLUGIN_FILE', __FILE__);
@@ -85,11 +85,8 @@ class Subscription_Link_Payment {
      * Загрузка зависимостей
      */
     private function load_dependencies() {
-        require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-woocommerce-integration.php';
-        require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-payment-handler.php';
-        require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-admin-interface.php';
-        require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-subscription-manager.php';
         require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-simple-payment.php';
+        require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-admin-interface.php';
     }
     
     /**
@@ -99,12 +96,9 @@ class Subscription_Link_Payment {
         // Загружаем переводы
         load_plugin_textdomain('subscription-link', false, dirname(plugin_basename(__FILE__)) . '/languages');
         
-        // Инициализируем компоненты
-        Subscription_Link_WooCommerce_Integration::get_instance();
-        Subscription_Link_Payment_Handler::get_instance();
-        Subscription_Link_Admin_Interface::get_instance();
-        Subscription_Link_Manager::get_instance();
+        // Инициализируем компоненты (только простые платежи)
         Subscription_Link_Simple_Payment::get_instance();
+        Subscription_Link_Admin_Interface::get_instance();
     }
     
     /**
