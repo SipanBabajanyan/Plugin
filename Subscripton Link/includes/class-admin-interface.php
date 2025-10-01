@@ -82,6 +82,15 @@ class Subscription_Link_Admin_Interface {
         
         add_submenu_page(
             'subscription-links',
+            'Simple Payments',
+            'Simple Payments',
+            'manage_woocommerce',
+            'subscription-links-simple',
+            array($this, 'simple_payments_page')
+        );
+        
+        add_submenu_page(
+            'subscription-links',
             'Settings',
             'Settings',
             'manage_woocommerce',
@@ -150,6 +159,13 @@ class Subscription_Link_Admin_Interface {
         $products = $this->get_subscription_products();
         
         include SUBSCRIPTION_LINK_PLUGIN_DIR . 'templates/admin-create.php';
+    }
+    
+    /**
+     * Страница простых платежей
+     */
+    public function simple_payments_page() {
+        include SUBSCRIPTION_LINK_PLUGIN_DIR . 'templates/admin-simple-payments.php';
     }
     
     /**

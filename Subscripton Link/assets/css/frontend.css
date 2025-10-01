@@ -276,17 +276,87 @@
     border-radius: 6px;
 }
 
+/* Стили для простых платежей */
+.simple-payment-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.simple-payment-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.simple-payment-header h1 {
+    color: #333;
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.payment-description {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+}
+
+.simple-payment-content {
+    display: grid;
+    gap: 30px;
+}
+
+.payment-details {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.payment-amount {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.payment-amount .amount {
+    display: block;
+}
+
+.payment-amount .currency {
+    font-size: 18px;
+    color: #7f8c8d;
+    font-weight: 400;
+}
+
+.simple-payment-error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #f5c6cb;
+    text-align: center;
+    margin: 20px 0;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
-    .subscription-payment-container {
+    .subscription-payment-container,
+    .simple-payment-container {
         padding: 15px;
     }
     
-    .subscription-payment-header h1 {
+    .subscription-payment-header h1,
+    .simple-payment-header h1 {
         font-size: 24px;
     }
     
-    .subscription-amount {
+    .subscription-amount,
+    .payment-amount {
         font-size: 28px;
     }
     

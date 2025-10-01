@@ -89,6 +89,7 @@ class Subscription_Link_Payment {
         require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-payment-handler.php';
         require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-admin-interface.php';
         require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-subscription-manager.php';
+        require_once SUBSCRIPTION_LINK_PLUGIN_DIR . 'includes/class-simple-payment.php';
     }
     
     /**
@@ -103,6 +104,7 @@ class Subscription_Link_Payment {
         Subscription_Link_Payment_Handler::get_instance();
         Subscription_Link_Admin_Interface::get_instance();
         Subscription_Link_Manager::get_instance();
+        Subscription_Link_Simple_Payment::get_instance();
     }
     
     /**
@@ -217,20 +219,27 @@ class Subscription_Link_Payment {
     }
     
     /**
-     * Создание страницы быстрой оплаты
+     * Создание страниц оплаты
      */
     private function create_payment_page() {
-        $page_title = 'Subscription Payment';
-        $page_slug = 'subscription-payment';
+        // Создаем страницу для подписок
+        $this->create_page('Subscription Payment', 'subscription-payment', '[subscription_payment_form]');
         
-        // Проверяем, существует ли уже страница
-        $existing_page = get_page_by_path($page_slug);
+        // Создаем страницу для простых платежей
+        $this->create_page('Simple Payment', 'simple-payment', '[simple_payment_link]');
+    }
+    
+    /**
+     * Создание страницы
+     */
+    private function create_page($title, $slug, $content) {
+        $existing_page = get_page_by_path($slug);
         
         if (!$existing_page) {
             $page_data = array(
-                'post_title' => $page_title,
-                'post_name' => $page_slug,
-                'post_content' => '[subscription_payment_form]',
+                'post_title' => $title,
+                'post_name' => $slug,
+                'post_content' => $content,
                 'post_status' => 'publish',
                 'post_type' => 'page',
                 'post_author' => 1
