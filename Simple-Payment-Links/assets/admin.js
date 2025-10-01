@@ -35,6 +35,8 @@
         var linkId = $button.data('link-id');
         var $row = $button.closest('tr');
         
+        console.log('Delete button clicked, link ID:', linkId);
+        
         if (!confirm('Удалить эту ссылку? Это действие нельзя отменить.')) {
             return;
         }
@@ -47,10 +49,10 @@
             type: 'POST',
             data: {
                 action: 'delete_payment_link',
-                link_id: linkId,
-                nonce: $('#spl_admin_nonce').val()
+                link_id: linkId
             },
             success: function(response) {
+                console.log('AJAX response:', response);
                 if (response.success) {
                     $row.fadeOut(function() {
                         $(this).remove();
@@ -61,8 +63,9 @@
                     $button.prop('disabled', false).text('Удалить');
                 }
             },
-            error: function() {
-                showNotice('Ошибка удаления ссылки', 'error');
+            error: function(xhr, status, error) {
+                console.log('AJAX error:', xhr.responseText);
+                showNotice('Ошибка удаления ссылки: ' + error, 'error');
                 $button.prop('disabled', false).text('Удалить');
             }
         });

@@ -304,12 +304,7 @@ class Simple_Payment_Links {
      */
     public function ajax_delete_payment_link() {
         if (!current_user_can('manage_options')) {
-            wp_die('Insufficient permissions');
-        }
-        
-        // Проверяем nonce
-        if (!wp_verify_nonce($_POST['nonce'], 'spl_admin_nonce')) {
-            wp_send_json_error('Security check failed');
+            wp_send_json_error('Insufficient permissions');
         }
         
         $link_id = intval($_POST['link_id']);
@@ -320,6 +315,16 @@ class Simple_Payment_Links {
         
         global $wpdb;
         $table_name = $wpdb->prefix . 'simple_payment_links';
+        
+        // Проверяем, существует ли ссылка
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_name WHERE id = %d",
+            $link_id
+        ));
+        
+        if (!$exists) {
+            wp_send_json_error('Ссылка не найдена');
+        }
         
         $result = $wpdb->delete(
             $table_name,
