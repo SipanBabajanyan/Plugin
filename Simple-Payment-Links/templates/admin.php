@@ -16,6 +16,7 @@ if (!defined('ABSPATH')) {
         <h2>Создать новую ссылку</h2>
         
         <form method="post" id="create-payment-link-form">
+            <?php wp_nonce_field('spl_admin_nonce', 'spl_admin_nonce'); ?>
             <table class="form-table">
                 <tr>
                     <th scope="row">
@@ -72,6 +73,13 @@ if (!defined('ABSPATH')) {
     <!-- Список существующих ссылок -->
     <div class="spl-links-list">
         <h2>Существующие ссылки</h2>
+        
+        <?php 
+        // Отладочная информация
+        if (current_user_can('manage_options')) {
+            echo '<p><strong>Отладка:</strong> Найдено ссылок: ' . count($links) . '</p>';
+        }
+        ?>
         
         <?php if (empty($links)): ?>
             <p>Ссылки не найдены.</p>

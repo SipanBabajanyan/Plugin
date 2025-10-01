@@ -47,7 +47,8 @@
             type: 'POST',
             data: {
                 action: 'delete_payment_link',
-                link_id: linkId
+                link_id: linkId,
+                nonce: $('#spl_admin_nonce').val()
             },
             success: function(response) {
                 if (response.success) {

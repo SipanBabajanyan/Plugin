@@ -200,8 +200,9 @@ class Simple_Payment_Links {
                 echo '<div class="notice notice-success"><p>Ссылка создана: <a href="' . esc_url($payment_url) . '" target="_blank">' . esc_url($payment_url) . '</a></p></div>';
             });
         } else {
-            add_action('admin_notices', function() {
-                echo '<div class="notice notice-error"><p>Ошибка создания ссылки!</p></div>';
+            global $wpdb;
+            add_action('admin_notices', function() use ($wpdb) {
+                echo '<div class="notice notice-error"><p>Ошибка создания ссылки: ' . esc_html($wpdb->last_error) . '</p></div>';
             });
         }
     }
@@ -306,7 +307,16 @@ class Simple_Payment_Links {
             wp_die('Insufficient permissions');
         }
         
+        // Проверяем nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'spl_admin_nonce')) {
+            wp_send_json_error('Security check failed');
+        }
+        
         $link_id = intval($_POST['link_id']);
+        
+        if (!$link_id) {
+            wp_send_json_error('Invalid link ID');
+        }
         
         global $wpdb;
         $table_name = $wpdb->prefix . 'simple_payment_links';
@@ -317,10 +327,10 @@ class Simple_Payment_Links {
             array('%d')
         );
         
-        if ($result) {
+        if ($result !== false) {
             wp_send_json_success('Ссылка удалена');
         } else {
-            wp_send_json_error('Ошибка удаления ссылки');
+            wp_send_json_error('Ошибка удаления ссылки: ' . $wpdb->last_error);
         }
     }
     
@@ -446,7 +456,15 @@ class Simple_Payment_Links {
         global $wpdb;
         $table_name = $wpdb->prefix . 'simple_payment_links';
         
-        return $wpdb->get_results("SELECT * FROM $table_name ORDER BY created_at DESC");
+        $results = $wpdb->get_results("SELECT * FROM $table_name ORDER BY created_at DESC");
+        
+        // Если таблица не существует, создаем ее
+        if ($wpdb->last_error) {
+            $this->create_tables();
+            $results = $wpdb->get_results("SELECT * FROM $table_name ORDER BY created_at DESC");
+        }
+        
+        return $results ? $results : array();
     }
     
     /**
@@ -460,8 +478,12 @@ class Simple_Payment_Links {
      * Активация плагина
      */
     public function activate() {
+        // Принудительно создаем таблицы
         $this->create_tables();
         $this->create_payment_page();
+        
+        // Очищаем кеш
+        wp_cache_flush();
     }
     
     /**
