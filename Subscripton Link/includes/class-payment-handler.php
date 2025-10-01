@@ -111,14 +111,14 @@ class Subscription_Link_Payment_Handler {
     }
     
     /**
-     * Добавить мета-данные подписки к заказу
+     * Добавить мета-данные подписки к заказу (совместимо с HPOS)
      */
     public function add_subscription_meta_to_order($order) {
         // Проверяем, есть ли токен подписки в сессии
         if (isset(WC()->session) && WC()->session->get('subscription_token')) {
             $token = WC()->session->get('subscription_token');
-            $order->add_meta_data('_subscription_token', $token);
-            $order->add_meta_data('_subscription_payment', 'yes');
+            $order->update_meta_data('_subscription_token', $token);
+            $order->update_meta_data('_subscription_payment', 'yes');
         }
     }
     

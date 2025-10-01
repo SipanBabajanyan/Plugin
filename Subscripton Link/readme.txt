@@ -4,7 +4,7 @@ Tags: woocommerce, subscription, payment, recurring
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,11 @@ Subscription Link Payment - это плагин для WordPress, который
 4. Настройки плагина
 
 == Changelog ==
+
+= 1.0.1 =
+* Исправлена совместимость с WooCommerce HPOS (High-Performance Order Storage)
+* Обновлены методы работы с заказами
+* Улучшена стабильность плагина
 
 = 1.0.0 =
 * Первый релиз

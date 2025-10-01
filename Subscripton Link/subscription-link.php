@@ -3,7 +3,7 @@
  * Plugin Name: Subscription Link Payment
  * Plugin URI: https://yourwebsite.com
  * Description: Создает постоянные ссылки для ежемесячной оплаты подписки без заполнения форм checkout
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Your Name
  * License: GPL v2 or later
  * Text Domain: subscription-link
@@ -27,8 +27,15 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
     return;
 }
 
+// Проверяем совместимость с HPOS
+add_action('before_woocommerce_init', function() {
+    if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+    }
+});
+
 // Определяем константы плагина
-define('SUBSCRIPTION_LINK_VERSION', '1.0.0');
+define('SUBSCRIPTION_LINK_VERSION', '1.0.1');
 define('SUBSCRIPTION_LINK_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SUBSCRIPTION_LINK_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SUBSCRIPTION_LINK_PLUGIN_FILE', __FILE__);

@@ -142,7 +142,7 @@ class Subscription_Link_WooCommerce_Integration {
     }
     
     /**
-     * Создание заказа в WooCommerce
+     * Создание заказа в WooCommerce (совместимо с HPOS)
      */
     public function create_order($subscription_data, $payment_method) {
         try {
@@ -164,8 +164,12 @@ class Subscription_Link_WooCommerce_Integration {
             $order->add_product($product, 1);
             
             // Устанавливаем адрес доставки (если нужно)
-            $order->set_billing_email($subscription_data->customer_email);
-            $order->set_billing_first_name($subscription_data->customer_name);
+            if ($subscription_data->customer_email) {
+                $order->set_billing_email($subscription_data->customer_email);
+            }
+            if ($subscription_data->customer_name) {
+                $order->set_billing_first_name($subscription_data->customer_name);
+            }
             
             // Устанавливаем метод оплаты
             $order->set_payment_method($payment_method);
@@ -173,15 +177,15 @@ class Subscription_Link_WooCommerce_Integration {
             // Устанавливаем статус
             $order->set_status('pending');
             
-            // Добавляем мета-данные
-            $order->add_meta_data('_subscription_token', $subscription_data->token);
-            $order->add_meta_data('_subscription_payment', 'yes');
-            
-            // Сохраняем заказ
-            $order->save();
+            // Добавляем мета-данные (совместимо с HPOS)
+            $order->update_meta_data('_subscription_token', $subscription_data->token);
+            $order->update_meta_data('_subscription_payment', 'yes');
             
             // Рассчитываем налоги и общую сумму
             $order->calculate_totals();
+            
+            // Сохраняем заказ
+            $order->save();
             
             return $order->get_id();
             
