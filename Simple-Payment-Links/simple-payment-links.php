@@ -72,7 +72,6 @@ class Simple_Payment_Links {
      */
     private function init_hooks() {
         add_action('init', array($this, 'init'));
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
         
@@ -82,11 +81,6 @@ class Simple_Payment_Links {
         
         // AJAX обработчики
         add_action('wp_ajax_create_payment_link', array($this, 'ajax_create_payment_link'));
-        add_action('wp_ajax_process_payment', array($this, 'ajax_process_payment'));
-        add_action('wp_ajax_nopriv_process_payment', array($this, 'ajax_process_payment'));
-        
-        // Шорткод для страницы оплаты
-        add_shortcode('simple_payment', array($this, 'render_payment_page'));
     }
     
     /**
@@ -97,15 +91,6 @@ class Simple_Payment_Links {
         load_plugin_textdomain('simple-payment-links', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
     
-    /**
-     * Подключение скриптов для фронтенда
-     */
-    public function enqueue_scripts() {
-        if (is_page('payment')) {
-            wp_enqueue_style('spl-style', SPL_PLUGIN_URL . 'assets/style.css', array(), SPL_VERSION);
-            wp_enqueue_script('spl-script', SPL_PLUGIN_URL . 'assets/script.js', array('jquery'), SPL_VERSION, true);
-        }
-    }
     
     /**
      * Подключение скриптов для админки
@@ -149,9 +134,8 @@ class Simple_Payment_Links {
      */
     public function create_payment_link() {
         $amount = floatval($_POST['amount']);
+        $title = sanitize_text_field($_POST['title']);
         $description = sanitize_text_field($_POST['description']);
-        $customer_name = sanitize_text_field($_POST['customer_name']);
-        $customer_email = sanitize_email($_POST['customer_email']);
         
         if ($amount <= 0) {
             add_action('admin_notices', function() {
@@ -160,29 +144,45 @@ class Simple_Payment_Links {
             return;
         }
         
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'simple_payment_links';
+        if (empty($title)) {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-error"><p>Название обязательно!</p></div>';
+            });
+            return;
+        }
         
-        $token = $this->generate_token();
-        $payment_url = home_url('/payment/?token=' . $token);
+        // Создаем заказ сразу
+        $order_id = $this->create_order_direct($amount, $title, $description);
         
-        $result = $wpdb->insert(
-            $table_name,
-            array(
-                'token' => $token,
-                'amount' => $amount,
-                'description' => $description,
-                'customer_name' => $customer_name,
-                'customer_email' => $customer_email,
-                'status' => 'active',
-                'created_at' => current_time('mysql')
-            ),
-            array('%s', '%f', '%s', '%s', '%s', '%s', '%s')
-        );
-        
-        if ($result) {
+        if ($order_id) {
+            $order = wc_get_order($order_id);
+            $payment_url = $order->get_checkout_payment_url();
+            
+            // Сохраняем в БД для истории
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'simple_payment_links';
+            
+            $wpdb->insert(
+                $table_name,
+                array(
+                    'token' => $order->get_meta('_simple_payment_token'),
+                    'amount' => $amount,
+                    'description' => $title,
+                    'customer_name' => '',
+                    'customer_email' => '',
+                    'status' => 'active',
+                    'order_id' => $order_id,
+                    'created_at' => current_time('mysql')
+                ),
+                array('%s', '%f', '%s', '%s', '%s', '%s', '%d', '%s')
+            );
+            
             add_action('admin_notices', function() use ($payment_url) {
                 echo '<div class="notice notice-success"><p>Ссылка создана: <a href="' . esc_url($payment_url) . '" target="_blank">' . esc_url($payment_url) . '</a></p></div>';
+            });
+        } else {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-error"><p>Ошибка создания заказа!</p></div>';
             });
         }
     }
@@ -196,77 +196,57 @@ class Simple_Payment_Links {
         }
         
         $amount = floatval($_POST['amount']);
+        $title = sanitize_text_field($_POST['title']);
         $description = sanitize_text_field($_POST['description']);
-        $customer_name = sanitize_text_field($_POST['customer_name']);
-        $customer_email = sanitize_email($_POST['customer_email']);
         
         if ($amount <= 0) {
             wp_send_json_error('Сумма должна быть больше нуля');
         }
         
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'simple_payment_links';
-        
-        $token = $this->generate_token();
-        $payment_url = home_url('/payment/?token=' . $token);
-        
-        $result = $wpdb->insert(
-            $table_name,
-            array(
-                'token' => $token,
-                'amount' => $amount,
-                'description' => $description,
-                'customer_name' => $customer_name,
-                'customer_email' => $customer_email,
-                'status' => 'active',
-                'created_at' => current_time('mysql')
-            ),
-            array('%s', '%f', '%s', '%s', '%s', '%s', '%s')
-        );
-        
-        if ($result) {
-            wp_send_json_success(array(
-                'link' => $payment_url,
-                'message' => 'Ссылка создана успешно'
-            ));
-        } else {
-            wp_send_json_error('Ошибка создания ссылки');
-        }
-    }
-    
-    /**
-     * AJAX обработка платежа
-     */
-    public function ajax_process_payment() {
-        $token = sanitize_text_field($_POST['token']);
-        $payment_method = sanitize_text_field($_POST['payment_method']);
-        
-        $link_data = $this->get_link_by_token($token);
-        
-        if (!$link_data) {
-            wp_send_json_error('Ссылка не найдена');
+        if (empty($title)) {
+            wp_send_json_error('Название обязательно');
         }
         
-        // Создаем заказ
-        $order_id = $this->create_order($link_data, $payment_method);
+        // Создаем заказ сразу
+        $order_id = $this->create_order_direct($amount, $title, $description);
         
         if ($order_id) {
             $order = wc_get_order($order_id);
             $payment_url = $order->get_checkout_payment_url();
             
+            // Сохраняем в БД для истории
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'simple_payment_links';
+            
+            $wpdb->insert(
+                $table_name,
+                array(
+                    'token' => $order->get_meta('_simple_payment_token'),
+                    'amount' => $amount,
+                    'description' => $title,
+                    'customer_name' => '',
+                    'customer_email' => '',
+                    'status' => 'active',
+                    'order_id' => $order_id,
+                    'created_at' => current_time('mysql')
+                ),
+                array('%s', '%f', '%s', '%s', '%s', '%s', '%d', '%s')
+            );
+            
             wp_send_json_success(array(
-                'order_id' => $order_id,
-                'payment_url' => $payment_url
+                'link' => $payment_url,
+                'message' => 'Ссылка создана успешно'
             ));
         } else {
             wp_send_json_error('Ошибка создания заказа');
         }
     }
     
+    
     /**
-     * Создание заказа
+     * Прямое создание заказа (без промежуточной страницы)
      */
-    private function create_order($link_data, $payment_method) {
+    private function create_order_direct($amount, $title, $description = '') {
         try {
             $order = wc_create_order();
             
@@ -276,26 +256,22 @@ class Simple_Payment_Links {
             
             // Добавляем позицию как fee
             $item = new WC_Order_Item_Fee();
-            $item->set_name($link_data->description ?: 'Платеж по ссылке');
-            $item->set_amount($link_data->amount);
-            $item->set_total($link_data->amount);
+            $item->set_name($title);
+            $item->set_amount($amount);
+            $item->set_total($amount);
             $order->add_item($item);
             
-            // Устанавливаем данные клиента
-            if ($link_data->customer_email) {
-                $order->set_billing_email($link_data->customer_email);
-            }
-            if ($link_data->customer_name) {
-                $order->set_billing_first_name($link_data->customer_name);
-            }
-            
-            // Устанавливаем метод оплаты
-            $order->set_payment_method($payment_method);
+            // Устанавливаем статус
             $order->set_status('pending');
             
             // Добавляем мета-данные
-            $order->update_meta_data('_simple_payment_token', $link_data->token);
+            $token = $this->generate_token();
+            $order->update_meta_data('_simple_payment_token', $token);
             $order->update_meta_data('_simple_payment', 'yes');
+            $order->update_meta_data('_simple_payment_title', $title);
+            if ($description) {
+                $order->update_meta_data('_simple_payment_description', $description);
+            }
             
             // Рассчитываем и сохраняем
             $order->calculate_totals();
@@ -309,39 +285,6 @@ class Simple_Payment_Links {
         }
     }
     
-    /**
-     * Рендер страницы оплаты
-     */
-    public function render_payment_page($atts) {
-        $token = isset($_GET['token']) ? sanitize_text_field($_GET['token']) : '';
-        
-        if (!$token) {
-            return '<div class="spl-error">Неверная ссылка для оплаты.</div>';
-        }
-        
-        $link_data = $this->get_link_by_token($token);
-        
-        if (!$link_data || $link_data->status !== 'active') {
-            return '<div class="spl-error">Ссылка для оплаты не найдена или неактивна.</div>';
-        }
-        
-        ob_start();
-        include SPL_PLUGIN_DIR . 'templates/payment.php';
-        return ob_get_clean();
-    }
-    
-    /**
-     * Получить ссылку по токену
-     */
-    private function get_link_by_token($token) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'simple_payment_links';
-        
-        return $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table_name WHERE token = %s",
-            $token
-        ));
-    }
     
     /**
      * Получить все ссылки
@@ -365,7 +308,6 @@ class Simple_Payment_Links {
      */
     public function activate() {
         $this->create_tables();
-        $this->create_payment_page();
     }
     
     /**
@@ -386,34 +328,17 @@ class Simple_Payment_Links {
             customer_name varchar(255),
             customer_email varchar(255),
             status varchar(20) DEFAULT 'active',
+            order_id int(11) DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
-            UNIQUE KEY token (token)
+            UNIQUE KEY token (token),
+            KEY order_id (order_id)
         ) $charset_collate;";
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
     
-    /**
-     * Создание страницы оплаты
-     */
-    private function create_payment_page() {
-        $existing_page = get_page_by_path('payment');
-        
-        if (!$existing_page) {
-            $page_data = array(
-                'post_title' => 'Payment',
-                'post_name' => 'payment',
-                'post_content' => '[simple_payment]',
-                'post_status' => 'publish',
-                'post_type' => 'page',
-                'post_author' => 1
-            );
-            
-            wp_insert_post($page_data);
-        }
-    }
 }
 
 // Инициализируем плагин

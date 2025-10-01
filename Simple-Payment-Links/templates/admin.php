@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
             <table class="form-table">
                 <tr>
                     <th scope="row">
-                        <label for="amount">Сумма</label>
+                        <label for="amount">Сумма *</label>
                     </th>
                     <td>
                         <input type="number" 
@@ -35,6 +35,21 @@ if (!defined('ABSPATH')) {
                 
                 <tr>
                     <th scope="row">
+                        <label for="title">Название *</label>
+                    </th>
+                    <td>
+                        <input type="text" 
+                               name="title" 
+                               id="title" 
+                               class="regular-text"
+                               placeholder="Название платежа"
+                               required>
+                        <p class="description">Название платежа (обязательно)</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
                         <label for="description">Описание</label>
                     </th>
                     <td>
@@ -42,36 +57,8 @@ if (!defined('ABSPATH')) {
                                name="description" 
                                id="description" 
                                class="regular-text"
-                               placeholder="Описание платежа">
-                        <p class="description">Описание платежа (необязательно)</p>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <th scope="row">
-                        <label for="customer_name">Имя клиента</label>
-                    </th>
-                    <td>
-                        <input type="text" 
-                               name="customer_name" 
-                               id="customer_name" 
-                               class="regular-text"
-                               placeholder="Имя клиента">
-                        <p class="description">Имя клиента (необязательно)</p>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <th scope="row">
-                        <label for="customer_email">Email клиента</label>
-                    </th>
-                    <td>
-                        <input type="email" 
-                               name="customer_email" 
-                               id="customer_email" 
-                               class="regular-text"
-                               placeholder="email@example.com">
-                        <p class="description">Email клиента (необязательно)</p>
+                               placeholder="Дополнительное описание">
+                        <p class="description">Дополнительное описание (необязательно)</p>
                     </td>
                 </tr>
             </table>
@@ -93,8 +80,8 @@ if (!defined('ABSPATH')) {
                 <thead>
                     <tr>
                         <th>Сумма</th>
-                        <th>Описание</th>
-                        <th>Клиент</th>
+                        <th>Название</th>
+                        <th>ID заказа</th>
                         <th>Статус</th>
                         <th>Создана</th>
                         <th>Ссылка</th>
@@ -106,13 +93,12 @@ if (!defined('ABSPATH')) {
                             <td><?php echo wc_price($link->amount); ?></td>
                             <td><?php echo esc_html($link->description ?: '—'); ?></td>
                             <td>
-                                <?php if ($link->customer_name): ?>
-                                    <strong><?php echo esc_html($link->customer_name); ?></strong><br>
-                                <?php endif; ?>
-                                <?php if ($link->customer_email): ?>
-                                    <a href="mailto:<?php echo esc_attr($link->customer_email); ?>">
-                                        <?php echo esc_html($link->customer_email); ?>
+                                <?php if (isset($link->order_id) && $link->order_id): ?>
+                                    <a href="<?php echo admin_url('post.php?post=' . $link->order_id . '&action=edit'); ?>" target="_blank">
+                                        #<?php echo esc_html($link->order_id); ?>
                                     </a>
+                                <?php else: ?>
+                                    —
                                 <?php endif; ?>
                             </td>
                             <td>
@@ -123,7 +109,12 @@ if (!defined('ABSPATH')) {
                             <td><?php echo esc_html(date('d.m.Y H:i', strtotime($link->created_at))); ?></td>
                             <td>
                                 <?php
-                                $payment_url = home_url('/payment/?token=' . $link->token);
+                                if (isset($link->order_id) && $link->order_id) {
+                                    $order = wc_get_order($link->order_id);
+                                    $payment_url = $order ? $order->get_checkout_payment_url() : '#';
+                                } else {
+                                    $payment_url = home_url('/payment/?token=' . $link->token);
+                                }
                                 ?>
                                 <input type="text" 
                                        value="<?php echo esc_url($payment_url); ?>" 
