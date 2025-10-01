@@ -11,11 +11,7 @@ Plugin/
 │   ├── includes/               # PHP классы
 │   ├── templates/              # Шаблоны страниц
 │   ├── assets/                 # CSS и JavaScript
-│   ├── languages/              # Файлы переводов
-│   ├── readme.txt             # Описание плагина
-│   ├── INSTALLATION.md        # Инструкция по установке
-│   ├── PLAN.md                # План разработки
-│   └── PROGRESS.md            # Отслеживание прогресса
+│   └── readme.txt             # Описание плагина
 ├── [Другие плагины...]        # Будущие плагины
 ├── .gitignore                 # Исключения для Git
 └── README.md                  # Этот файл

@@ -15,6 +15,11 @@ wp-content/upgrade/
 .DS_Store
 Thumbs.db
 
+# Documentation files (not needed for plugin)
+PLAN.md
+PROGRESS.md
+INSTALLATION.md
+
 # IDE
 .vscode/
 .idea/
